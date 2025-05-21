@@ -1,13 +1,14 @@
-name: Trivy Scan
+name: Security Scan
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
+    branches: [ main ]
 
 jobs:
-  trivy:
-    name: Scan code with Trivy
+  security:
+    name: Security Scan
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -16,6 +17,13 @@ jobs:
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          scan-type: fs
-          scan-ref: .
-          severity: CRITICAL,HIGH
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'table'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '1'
+          ignore-unfixed: true
+
+      - name: Display Trivy scan results
+        if: always()
+        run: cat trivy-results.txt
